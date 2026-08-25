@@ -1,4 +1,3 @@
-// Import Firebase SDKs (v10 Modular via CDN)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { 
     getAuth, 
@@ -12,9 +11,6 @@ import {
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Master Authorization Key for Officer Registration (Keep secret among officers)
-const OFFICER_SECRET_PASSCODE = "PAF-ROTC-2026";
-
 // Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCuSpIcl95F-XUM3olVnJSVNRTRzXroO8Y",
@@ -26,15 +22,14 @@ const firebaseConfig = {
   measurementId: "G-ZQFXEQLRF5"
 };
 
-// Initialize Firebase
+// Initialize Firebase SDKs
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --------------------------------------------------
+    
     // UI Panel Slide Controls
-    // --------------------------------------------------
     const container = document.getElementById('authContainer');
     const signUpBtn = document.getElementById('signUpBtn');
     const signInBtn = document.getElementById('signInBtn');
@@ -51,41 +46,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --------------------------------------------------
-    // Officer Passcode Dynamic Display Logic
-    // --------------------------------------------------
+    // Role-Based Enable/Disable Logic for Military Rank
     const roleSelect = document.getElementById('roleSelect');
-    const passcodeContainer = document.getElementById('officerPasscodeContainer');
-    const officerPasscode = document.getElementById('officerPasscode');
+    const rankSelect = document.getElementById('rankSelect');
+    const classInput = document.getElementById('classInput');
 
-    if (roleSelect && passcodeContainer && officerPasscode) {
+    if (roleSelect && rankSelect) {
         roleSelect.addEventListener('change', () => {
             if (roleSelect.value === 'officer') {
-                passcodeContainer.style.display = 'block';
-                officerPasscode.required = true;
+                rankSelect.disabled = false;
             } else {
-                passcodeContainer.style.display = 'none';
-                officerPasscode.required = false;
-                officerPasscode.value = '';
+                rankSelect.disabled = true;
+                rankSelect.selectedIndex = 0;
+                if (classInput) classInput.value = '';
             }
         });
     }
 
-    // --------------------------------------------------
-    // Rank to Class Auto-Fill Mapping
-    // --------------------------------------------------
+    // Military Rank to Cadet Class Auto-Calculation
     const rankClassMap = {
         "C/COL": "1st Class",
         "C/LTC": "1st Class",
         "C/MAJ": "2nd Class",
         "C/CPT": "2nd Class",
         "C/1LT": "3rd Class",
-        "C/2LT": "3rd Class",
-        "Aspirant": "4th Class"
+        "C/2LT": "3rd Class"
     };
-
-    const rankSelect = document.getElementById('rankSelect');
-    const classInput = document.getElementById('classInput');
 
     if (rankSelect && classInput) {
         rankSelect.addEventListener('change', () => {
@@ -93,9 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --------------------------------------------------
     // Age Auto-Calculation from Date of Birth
-    // --------------------------------------------------
     const dobInput = document.getElementById('dobInput');
     const ageInput = document.getElementById('ageInput');
 
@@ -117,9 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --------------------------------------------------
-    // Password Visibility Toggle
-    // --------------------------------------------------
+    // Password Visibility Toggle Handler
     function setupPasswordToggle(inputId, toggleId) {
         const input = document.getElementById(inputId);
         const toggle = document.getElementById(toggleId);
@@ -137,9 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupPasswordToggle('signUpConfirmPassword', 'toggleSignUpConfirmPass');
     setupPasswordToggle('signInPassword', 'toggleSignInPass');
 
-    // --------------------------------------------------
-    // Password Strength Meter
-    // --------------------------------------------------
+    // Password Strength Evaluator
     const signUpPassword = document.getElementById('signUpPassword');
     const strengthBar = document.getElementById('strengthBar');
     const strengthText = document.getElementById('strengthText');
@@ -180,11 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --------------------------------------------------
-    // FIREBASE AUTHENTICATION & FIRESTORE LOGIC
-    // --------------------------------------------------
-
-    // 1. SIGN UP HANDLER
+    // Sign Up Form Submission Logic
     const signUpForm = document.getElementById('signUpForm');
     if (signUpForm) {
         signUpForm.addEventListener('submit', async (e) => {
@@ -193,23 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('signUpEmail').value;
             const password = document.getElementById('signUpPassword').value;
             const confirmPassword = document.getElementById('signUpConfirmPassword').value;
-            const selectedRole = roleSelect ? roleSelect.value : 'cadet';
 
             if (password !== confirmPassword) {
                 alert("Passwords do not match!");
                 return;
             }
 
-            // PASSCODE SECURITY VERIFICATION FOR OFFICER REGISTRATION
-            if (selectedRole === 'officer') {
-                const inputCode = officerPasscode.value.trim();
-                if (inputCode !== OFFICER_SECRET_PASSCODE) {
-                    alert("Unauthorized Registration: Incorrect Officer Authorization Passcode!");
-                    return;
-                }
-            }
-
-            // Gather cadet details
             const rank = rankSelect ? rankSelect.value : '';
             const cadetClass = classInput ? classInput.value : '';
             const lastName = document.getElementById('lastName').value;
@@ -220,15 +185,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const age = ageInput ? ageInput.value : '';
 
             try {
-                // Register user in Authentication
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // Store profile data with validated role in Firestore ("cadets" collection)
                 await setDoc(doc(db, "cadets", user.uid), {
                     uid: user.uid,
                     email: email,
-                    role: selectedRole, // 'officer' or 'cadet'
+                    role: 'officer',
                     rank: rank,
                     class: cadetClass,
                     lastName: lastName,
@@ -240,10 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     createdAt: new Date().toISOString()
                 });
 
-                alert("Account created successfully! You can now Sign In.");
-                container.classList.remove("right-panel-active"); // Slide panel back to Sign In
+                alert("Officer account created successfully! You can now Sign In.");
+                container.classList.remove("right-panel-active");
                 signUpForm.reset();
-                if (passcodeContainer) passcodeContainer.style.display = 'none';
+                rankSelect.disabled = true;
                 if (strengthBar) strengthBar.style.width = '0%';
                 if (strengthText) strengthText.textContent = '';
             } catch (error) {
@@ -252,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. SIGN IN HANDLER WITH ACCESS CONTROL ROUTING
+    // Sign In Form Submission Logic
     const signInForm = document.getElementById('signInForm');
     if (signInForm) {
         signInForm.addEventListener('submit', async (e) => {
@@ -262,11 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('signInPassword').value;
 
             try {
-                // Authenticate user
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // Verify document role in Firestore
                 const userDocRef = doc(db, "cadets", user.uid);
                 const userDocSnap = await getDoc(userDocRef);
 
@@ -274,14 +235,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     const userData = userDocSnap.data();
 
                     if (userData.role === 'officer') {
-                        // Route Cadet Officers to Full Admin Dashboard
                         window.location.href = "../HTML/dashboard.html";
                     } else {
-                        // Route Regular Cadets exclusively to Attendance Mobile Scanner
-                        window.location.href = "../HTML/cadet-scanner.html";
+                        alert("Access Denied: This portal is restricted to Cadet Officers.");
                     }
                 } else {
-                    alert("Account details record not found in system database.");
+                    alert("Account record not found in system database.");
                 }
             } catch (error) {
                 alert("Sign In Error: " + error.message);

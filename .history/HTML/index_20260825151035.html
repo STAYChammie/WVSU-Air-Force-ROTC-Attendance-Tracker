@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/index.css">
+    <title>PAF ROTC - Portal Access</title>
+</head>
+<body>
+    <div class="portal-wrapper">
+        <!-- BRANDING SIDEBAR / HERO BANNER -->
+        <div class="brand-banner">
+            <div class="brand-overlay"></div>
+            <div class="brand-content">
+                <div class="logo-container">
+                    <img src="../IMAGES/ROTC logo.png" alt="PAF ROTC Logo" class="unit-logo" onerror="this.style.display='none'">
+                </div>
+                <h1 class="portal-heading">AIR FORCE ROTC UNIT</h1>
+                <p class="portal-subheading">526th Department of Military Science & Tactics</p>
+                <div class="unit-badge">CADET MANAGEMENT SYSTEM</div>
+            </div>
+        </div>
+
+        <!-- AUTHENTICATION FORM AREA -->
+        <main class="auth-section">
+            <div class="auth-container" id="authContainer">
+                
+                <!-- SIGN UP FORM -->
+                <div class="form-container sign-up-container">
+                    <form id="signUpForm">
+                        <div class="form-header">
+                            <h2>Cadet Registration</h2>
+                            <span>Create your account to join the digital unit roster</span>
+                        </div>
+
+                        <div class="form-scroll-wrapper">
+                            <!-- SECTION 1: ACCOUNT TYPE & RANK -->
+                            <div class="form-section-title">Account Type & Service Rank</div>
+                            
+                            <div class="input-grid grid-2">
+                                <div class="input-with-label">
+                                    <label for="roleSelect">Account Role</label>
+                                    <select class="form-select" id="roleSelect" required>
+                                        <option value="cadet" selected>Cadet (Regular)</option>
+                                        <option value="officer">Cadet Officer (Admin)</option>
+                                    </select>
+                                </div>
+
+                                <div class="input-with-label">
+                                    <label for="rankSelect">Military Rank</label>
+                                    <select class="form-select" id="rankSelect" required>
+                                        <option value="" disabled selected hidden>Select Rank</option>
+                                        <option value="C/COL">C/COL</option>
+                                        <option value="C/LTC">C/LTC</option>
+                                        <option value="C/MAJ">C/MAJ</option>
+                                        <option value="C/CPT">C/CPT</option>
+                                        <option value="C/1LT">C/1LT</option>
+                                        <option value="C/2LT">C/2LT</option>
+                                        <option value="Aspirant">Aspirant / Basic Cadet</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- OFFICER AUTHORIZATION PASSCODE -->
+                            <div class="input-with-label" id="officerPasscodeContainer" style="display: none; margin-top: 8px;">
+                                <label for="officerPasscode" class="passcode-label">Unit Authorization Passcode *</label>
+                                <input type="password" id="officerPasscode" placeholder="Enter Unit Passcode" />
+                            </div>
+
+                            <!-- SECTION 2: PERSONAL INFORMATION -->
+                            <div class="form-section-title">Personal Details</div>
+
+                            <div class="input-grid grid-2">
+                                <div class="input-with-label">
+                                    <label for="classInput">Cadet Class</label>
+                                    <input type="text" id="classInput" placeholder="Auto-calculated Class" readonly />
+                                </div>
+                                <div class="input-with-label">
+                                    <label for="suffix">Suffix (Optional)</label>
+                                    <input type="text" id="suffix" placeholder="e.g. Jr., III" />
+                                </div>
+                            </div>
+
+                            <div class="input-grid grid-2">
+                                <div class="input-with-label">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" placeholder="Last Name" required />
+                                </div>
+                                <div class="input-with-label">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" placeholder="First Name" required />
+                                </div>
+                            </div>
+
+                            <div class="input-grid grid-2">
+                                <div class="input-with-label">
+                                    <label for="middleName">Middle Name</label>
+                                    <input type="text" id="middleName" placeholder="Middle Name" />
+                                </div>
+                                <div class="input-grid grid-2" style="gap: 6px;">
+                                    <div class="input-with-label">
+                                        <label for="dobInput">Date of Birth</label>
+                                        <input type="date" id="dobInput" required />
+                                    </div>
+                                    <div class="input-with-label">
+                                        <label for="ageInput">Age</label>
+                                        <input type="number" id="ageInput" placeholder="Age" readonly />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 3: ACCOUNT CREDENTIALS -->
+                            <div class="form-section-title">Account Credentials</div>
+                            
+                            <div class="input-with-label">
+                                <label for="signUpEmail">Institutional Email</label>
+                                <input type="email" id="signUpEmail" placeholder="cadet@wvsu.edu.ph" required />
+                            </div>
+                            
+                            <div class="input-with-label">
+                                <label for="signUpPassword">Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="signUpPassword" placeholder="Create Password" required />
+                                    <span class="toggle-password" id="toggleSignUpPass">👁️</span>
+                                </div>
+                            </div>
+
+                            <div class="strength-meter-container">
+                                <div class="strength-bar" id="strengthBar"></div>
+                            </div>
+                            <span class="strength-text" id="strengthText"></span>
+
+                            <div class="input-with-label">
+                                <label for="signUpConfirmPassword">Confirm Password</label>
+                                <div class="password-wrapper">
+                                    <input type="password" id="signUpConfirmPassword" placeholder="Repeat Password" required />
+                                    <span class="toggle-password" id="toggleSignUpConfirmPass">👁️</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold">REGISTER ACCOUNT</button>
+                    </form>
+                </div>
+
+                <!-- SIGN IN FORM -->
+                <div class="form-container sign-in-container">
+                    <form id="signInForm">
+                        <div class="form-header">
+                            <h2>Portal Access</h2>
+                            <span>Sign in with your verified institutional account</span>
+                        </div>
+
+                        <div class="input-with-label width-full">
+                            <label for="signInEmail">Institutional Email</label>
+                            <input type="email" id="signInEmail" placeholder="cadet@wvsu.edu.ph" required />
+                        </div>
+                        
+                        <div class="input-with-label width-full">
+                            <label for="signInPassword">Password</label>
+                            <div class="password-wrapper">
+                                <input type="password" id="signInPassword" placeholder="Enter Password" required />
+                                <span class="toggle-password" id="toggleSignInPass">👁️</span>
+                            </div>
+                        </div>
+
+                        <a href="#" class="forgot-pass">Forgot password? Contact DMST Command</a>
+                        <button type="submit" class="btn btn-gold">SIGN IN TO PORTAL</button>
+                    </form>
+                </div>
+
+                <!-- OVERLAY PANELS -->
+                <div class="overlay-container">
+                    <div class="overlay">
+                        <div class="overlay-panel overlay-left">
+                            <h2>Registered Cadet?</h2>
+                            <p>Sign in to access your digital unit profile, training schedules, and QR scanner.</p>
+                            <button class="btn btn-ghost" id="signInBtn">BACK TO SIGN IN</button>
+                        </div>
+                        
+                        <div class="overlay-panel overlay-right">
+                            <h2>New Officer or Cadet?</h2>
+                            <p>Complete your intake profile to gain access to the Air Force ROTC Portal.</p>
+                            <button class="btn btn-ghost" id="signUpBtn">CREATE ACCOUNT</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="../JS/index.js"></script>
+</body>
+</html>
