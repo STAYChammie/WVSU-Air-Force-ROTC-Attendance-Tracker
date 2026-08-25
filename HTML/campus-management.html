@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/campus-management.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script type="module" src="../JS/campus-management.js"></script>
+    <title>Campus Management - WVSU Air Force ROTC</title>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <img src="../IMAGES/ROTC logo.png" alt="ROTC Logo">
+                </div>
+                <div class="brand-info">
+                    <span class="brand-title">WVSU - Air Force ROTC Unit</span>
+                </div>
+                <button id="sidebarToggle" class="toggle-btn" aria-label="Toggle Sidebar">
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sidebar-nav">
+                <div class="nav-group">
+                    <span class="nav-label">Analytics</span>
+                    <a href="dashboard.html" class="nav-item">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="9" />
+                            <rect x="14" y="3" width="7" height="5" />
+                            <rect x="14" y="12" width="7" height="9" />
+                            <rect x="3" y="16" width="7" height="5" />
+                        </svg>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                    <a href="campus-management.html" class="nav-item active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4z" />
+                            <path d="M6.5 20h11a2.5 2.5 0 0 0-2.5-2.5h-6A2.5 2.5 0 0 0 6.5 20z" />
+                        </svg>
+                        <span class="nav-text">Campus Management</span>
+                    </a>
+                </div>
+
+                <div class="nav-group">
+                    <span class="nav-label">Administration</span>
+                    <a href="cadet-registration.html" class="nav-item">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="17" y1="11" x2="23" y2="11"></line>
+                        </svg>
+                        <span class="nav-text">Cadet Registration</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="nav-item logout-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    <span class="nav-text">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN DASHBOARD CONTENT -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="user-welcome">
+                    <h2>Welcome back, <span id="userRank">Loading...</span> <span id="userName">User</span></h2>
+                    <p>Class: <strong id="userClass">...</strong> | Email: <span id="userEmail">...</span></p>
+                </div>
+            </header>
+
+            <section class="campuses-container">
+                <div class="section-header">
+                    <h3>Campus Attendance Directories</h3>
+                    <p>Click any campus bar to collapse/expand cadet attendance rosters and export data.</p>
+                </div>
+
+                <div class="campus-bars-list">
+                    <!-- CAMPUS 1: WVSU MAIN -->
+                    <div class="campus-card-accordion campus-wvsu" id="card-wvsu-main">
+                        <div class="campus-bar-header" onclick="toggleAccordion('wvsu-main')">
+                            <span class="campus-label">WVSU - Main Campus</span>
+                            <span class="dropdown-icon">▼</span>
+                        </div>
+
+                        <div class="accordion-wrapper" id="wvsu-main-wrapper">
+                            <div class="campus-dropdown-body" id="wvsu-main" data-campus-name="WVSU - Main Campus">
+                                <div class="action-controls-bar no-print">
+                                    <div class="search-wrapper">
+                                        <input type="text" class="campus-search-input" placeholder="Search cadet name in WVSU Main..." onkeyup="filterCadets('wvsu-main', this.value)">
+                                    </div>
+                                    <div class="filter-controls-group">
+                                        <div class="control-field">
+                                            <label>Sort Order:</label>
+                                            <select class="campus-filter-select sort-select" onchange="updateCampusFilter('wvsu-main', 'sortOrder', this.value)">
+                                                <option value="asc">Alphabetical (A-Z)</option>
+                                                <option value="desc">Alphabetical (Z-A)</option>
+                                            </select>
+                                        </div>
+                                        <div class="control-field">
+                                            <label>Rows per page:</label>
+                                            <select class="campus-filter-select page-size-select" onchange="updateCampusFilter('wvsu-main', 'pageSize', this.value)">
+                                                <option value="10">10 Rows</option>
+                                                <option value="20">20 Rows</option>
+                                                <option value="30">30 Rows</option>
+                                                <option value="all">Show All</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="button-group">
+                                        <button class="btn btn-export" onclick="exportCampusToExcel('wvsu-main')">
+                                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                <line x1="8" y1="13" x2="16" y2="13"></line>
+                                                <line x1="8" y1="17" x2="16" y2="17"></line>
+                                                <polyline points="10 9 9 9 8 9"></polyline>
+                                            </svg>
+                                            Export Excel
+                                        </button>
+                                        <button class="btn btn-print" onclick="printCampusDirectory('card-wvsu-main')">
+                                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                                <rect x="6" y="14" width="12" height="8"></rect>
+                                            </svg>
+                                            Print Directory
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="campus-summary-card">
+                                    <h4 class="summary-title">Campus Cadets Summary</h4>
+                                    <div class="summary-grid">
+                                        <div class="summary-box active-box">
+                                            <span class="summary-label">Total Male</span>
+                                            <span class="summary-value active-male-count">0</span>
+                                        </div>
+                                        <div class="summary-box active-box">
+                                            <span class="summary-label">Total Female</span>
+                                            <span class="summary-value active-female-count">0</span>
+                                        </div>
+                                        <div class="summary-box active-box highlight-box">
+                                            <span class="summary-label">Total Cadets</span>
+                                            <span class="summary-value total-active-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box">
+                                            <span class="summary-label">Dropped Male</span>
+                                            <span class="summary-value dropped-male-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box">
+                                            <span class="summary-label">Dropped Female</span>
+                                            <span class="summary-value dropped-female-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box highlight-box-red">
+                                            <span class="summary-label">Total Dropped</span>
+                                            <span class="summary-value total-dropped-count">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="gender-sections-wrapper">
+                                    <div class="gender-block" data-gender="male">
+                                        <h4 class="gender-title male-title">Male Cadets</h4>
+                                        <div class="table-wrapper">
+                                            <table class="attendance-table male-table">
+                                                <thead>
+                                                    <tr class="top-header">
+                                                        <th rowspan="2" class="student-col">LAST NAME, FIRST NAME, MIDDLE NAME</th>
+                                                        <th colspan="5">Saturday Training Schedule</th>
+                                                        <th rowspan="2">Absences</th>
+                                                        <th rowspan="2">Status</th>
+                                                    </tr>
+                                                    <tr class="sub-header">
+                                                        <th>Sat 1</th>
+                                                        <th>Sat 2</th>
+                                                        <th>Sat 3</th>
+                                                        <th>Sat 4</th>
+                                                        <th>Sat 5</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="male-cadet-list"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-footer-bar">
+                                            <div class="pagination-controls male-pagination"></div>
+                                            <div class="subtotal-bar">Total Male Cadets: <strong class="male-count">0</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="gender-block" data-gender="female">
+                                        <h4 class="gender-title female-title">Female Cadets</h4>
+                                        <div class="table-wrapper">
+                                            <table class="attendance-table female-table">
+                                                <thead>
+                                                    <tr class="top-header">
+                                                        <th rowspan="2" class="student-col">LAST NAME, FIRST NAME, MIDDLE NAME</th>
+                                                        <th colspan="5">Saturday Training Schedule</th>
+                                                        <th rowspan="2">Absences</th>
+                                                        <th rowspan="2">Status</th>
+                                                    </tr>
+                                                    <tr class="sub-header">
+                                                        <th>Sat 1</th>
+                                                        <th>Sat 2</th>
+                                                        <th>Sat 3</th>
+                                                        <th>Sat 4</th>
+                                                        <th>Sat 5</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="female-cadet-list"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-footer-bar">
+                                            <div class="pagination-controls female-pagination"></div>
+                                            <div class="subtotal-bar">Total Female Cadets: <strong class="female-count">0</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CAMPUS 2: ST. THERESE MTC -->
+                    <div class="campus-card-accordion campus-st-therese" id="card-st-therese">
+                        <div class="campus-bar-header" onclick="toggleAccordion('st-therese')">
+                            <span class="campus-label">St. Therese MTC - Colleges</span>
+                            <span class="dropdown-icon">▼</span>
+                        </div>
+
+                        <div class="accordion-wrapper" id="st-therese-wrapper">
+                            <div class="campus-dropdown-body" id="st-therese" data-campus-name="St. Therese MTC - Colleges">
+                                <div class="action-controls-bar no-print">
+                                    <div class="search-wrapper">
+                                        <input type="text" class="campus-search-input" placeholder="Search cadet name in St. Therese..." onkeyup="filterCadets('st-therese', this.value)">
+                                    </div>
+                                    <div class="filter-controls-group">
+                                        <div class="control-field">
+                                            <label>Sort Order:</label>
+                                            <select class="campus-filter-select sort-select" onchange="updateCampusFilter('st-therese', 'sortOrder', this.value)">
+                                                <option value="asc">Alphabetical (A-Z)</option>
+                                                <option value="desc">Alphabetical (Z-A)</option>
+                                            </select>
+                                        </div>
+                                        <div class="control-field">
+                                            <label>Rows per page:</label>
+                                            <select class="campus-filter-select page-size-select" onchange="updateCampusFilter('st-therese', 'pageSize', this.value)">
+                                                <option value="10">10 Rows</option>
+                                                <option value="20">20 Rows</option>
+                                                <option value="30">30 Rows</option>
+                                                <option value="all">Show All</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="button-group">
+                                        <button class="btn btn-export" onclick="exportCampusToExcel('st-therese')">
+                                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                <line x1="8" y1="13" x2="16" y2="13"></line>
+                                                <line x1="8" y1="17" x2="16" y2="17"></line>
+                                                <polyline points="10 9 9 9 8 9"></polyline>
+                                            </svg>
+                                            Export Excel
+                                        </button>
+                                        <button class="btn btn-print" onclick="printCampusDirectory('card-st-therese')">
+                                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                                <rect x="6" y="14" width="12" height="8"></rect>
+                                            </svg>
+                                            Print Directory
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="campus-summary-card">
+                                    <h4 class="summary-title">Campus Cadets Summary</h4>
+                                    <div class="summary-grid">
+                                        <div class="summary-box active-box">
+                                            <span class="summary-label">Total Male</span>
+                                            <span class="summary-value active-male-count">0</span>
+                                        </div>
+                                        <div class="summary-box active-box">
+                                            <span class="summary-label">Total Female</span>
+                                            <span class="summary-value active-female-count">0</span>
+                                        </div>
+                                        <div class="summary-box active-box highlight-box">
+                                            <span class="summary-label">Total Cadets</span>
+                                            <span class="summary-value total-active-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box">
+                                            <span class="summary-label">Dropped Male</span>
+                                            <span class="summary-value dropped-male-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box">
+                                            <span class="summary-label">Dropped Female</span>
+                                            <span class="summary-value dropped-female-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box highlight-box-red">
+                                            <span class="summary-label">Total Dropped</span>
+                                            <span class="summary-value total-dropped-count">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="gender-sections-wrapper">
+                                    <div class="gender-block" data-gender="male">
+                                        <h4 class="gender-title male-title">Male Cadets</h4>
+                                        <div class="table-wrapper">
+                                            <table class="attendance-table male-table">
+                                                <thead>
+                                                    <tr class="top-header">
+                                                        <th rowspan="2" class="student-col">LAST NAME, FIRST NAME, MIDDLE NAME</th>
+                                                        <th colspan="5">Saturday Training Schedule</th>
+                                                        <th rowspan="2">Absences</th>
+                                                        <th rowspan="2">Status</th>
+                                                    </tr>
+                                                    <tr class="sub-header">
+                                                        <th>Sat 1</th>
+                                                        <th>Sat 2</th>
+                                                        <th>Sat 3</th>
+                                                        <th>Sat 4</th>
+                                                        <th>Sat 5</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="male-cadet-list"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-footer-bar">
+                                            <div class="pagination-controls male-pagination"></div>
+                                            <div class="subtotal-bar">Total Male Cadets: <strong class="male-count">0</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="gender-block" data-gender="female">
+                                        <h4 class="gender-title female-title">Female Cadets</h4>
+                                        <div class="table-wrapper">
+                                            <table class="attendance-table female-table">
+                                                <thead>
+                                                    <tr class="top-header">
+                                                        <th rowspan="2" class="student-col">LAST NAME, FIRST NAME, MIDDLE NAME</th>
+                                                        <th colspan="5">Saturday Training Schedule</th>
+                                                        <th rowspan="2">Absences</th>
+                                                        <th rowspan="2">Status</th>
+                                                    </tr>
+                                                    <tr class="sub-header">
+                                                        <th>Sat 1</th>
+                                                        <th>Sat 2</th>
+                                                        <th>Sat 3</th>
+                                                        <th>Sat 4</th>
+                                                        <th>Sat 5</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="female-cadet-list"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-footer-bar">
+                                            <div class="pagination-controls female-pagination"></div>
+                                            <div class="subtotal-bar">Total Female Cadets: <strong class="female-count">0</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CAMPUS 3: IDC -->
+                    <div class="campus-card-accordion campus-idc" id="card-idc">
+                        <div class="campus-bar-header" onclick="toggleAccordion('idc')">
+                            <span class="campus-label">Iloilo Doctors' College</span>
+                            <span class="dropdown-icon">▼</span>
+                        </div>
+
+                        <div class="accordion-wrapper" id="idc-wrapper">
+                            <div class="campus-dropdown-body" id="idc" data-campus-name="Iloilo Doctors College">
+                                <div class="action-controls-bar no-print">
+                                    <div class="search-wrapper">
+                                        <input type="text" class="campus-search-input" placeholder="Search cadet name in IDC..." onkeyup="filterCadets('idc', this.value)">
+                                    </div>
+                                    <div class="filter-controls-group">
+                                        <div class="control-field">
+                                            <label>Sort Order:</label>
+                                            <select class="campus-filter-select sort-select" onchange="updateCampusFilter('idc', 'sortOrder', this.value)">
+                                                <option value="asc">Alphabetical (A-Z)</option>
+                                                <option value="desc">Alphabetical (Z-A)</option>
+                                            </select>
+                                        </div>
+                                        <div class="control-field">
+                                            <label>Rows per page:</label>
+                                            <select class="campus-filter-select page-size-select" onchange="updateCampusFilter('idc', 'pageSize', this.value)">
+                                                <option value="10">10 Rows</option>
+                                                <option value="20">20 Rows</option>
+                                                <option value="30">30 Rows</option>
+                                                <option value="all">Show All</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="button-group">
+                                        <button class="btn btn-export" onclick="exportCampusToExcel('idc')">
+                                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                <line x1="8" y1="13" x2="16" y2="13"></line>
+                                                <line x1="8" y1="17" x2="16" y2="17"></line>
+                                                <polyline points="10 9 9 9 8 9"></polyline>
+                                            </svg>
+                                            Export Excel
+                                        </button>
+                                        <button class="btn btn-print" onclick="printCampusDirectory('card-idc')">
+                                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                                <rect x="6" y="14" width="12" height="8"></rect>
+                                            </svg>
+                                            Print Directory
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="campus-summary-card">
+                                    <h4 class="summary-title">Campus Cadets Summary</h4>
+                                    <div class="summary-grid">
+                                        <div class="summary-box active-box">
+                                            <span class="summary-label">Total Male</span>
+                                            <span class="summary-value active-male-count">0</span>
+                                        </div>
+                                        <div class="summary-box active-box">
+                                            <span class="summary-label">Total Female</span>
+                                            <span class="summary-value active-female-count">0</span>
+                                        </div>
+                                        <div class="summary-box active-box highlight-box">
+                                            <span class="summary-label">Total Cadets</span>
+                                            <span class="summary-value total-active-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box">
+                                            <span class="summary-label">Dropped Male</span>
+                                            <span class="summary-value dropped-male-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box">
+                                            <span class="summary-label">Dropped Female</span>
+                                            <span class="summary-value dropped-female-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box highlight-box-red">
+                                            <span class="summary-label">Total Dropped</span>
+                                            <span class="summary-value total-dropped-count">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="gender-sections-wrapper">
+                                    <div class="gender-block" data-gender="male">
+                                        <h4 class="gender-title male-title">Male Cadets</h4>
+                                        <div class="table-wrapper">
+                                            <table class="attendance-table male-table">
+                                                <thead>
+                                                    <tr class="top-header">
+                                                        <th rowspan="2" class="student-col">LAST NAME, FIRST NAME, MIDDLE NAME</th>
+                                                        <th colspan="5">Saturday Training Schedule</th>
+                                                        <th rowspan="2">Absences</th>
+                                                        <th rowspan="2">Status</th>
+                                                    </tr>
+                                                    <tr class="sub-header">
+                                                        <th>Sat 1</th>
+                                                        <th>Sat 2</th>
+                                                        <th>Sat 3</th>
+                                                        <th>Sat 4</th>
+                                                        <th>Sat 5</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="male-cadet-list"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-footer-bar">
+                                            <div class="pagination-controls male-pagination"></div>
+                                            <div class="subtotal-bar">Total Male Cadets: <strong class="male-count">0</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="gender-block" data-gender="female">
+                                        <h4 class="gender-title female-title">Female Cadets</h4>
+                                        <div class="table-wrapper">
+                                            <table class="attendance-table female-table">
+                                                <thead>
+                                                    <tr class="top-header">
+                                                        <th rowspan="2" class="student-col">LAST NAME, FIRST NAME, MIDDLE NAME</th>
+                                                        <th colspan="5">Saturday Training Schedule</th>
+                                                        <th rowspan="2">Absences</th>
+                                                        <th rowspan="2">Status</th>
+                                                    </tr>
+                                                    <tr class="sub-header">
+                                                        <th>Sat 1</th>
+                                                        <th>Sat 2</th>
+                                                        <th>Sat 3</th>
+                                                        <th>Sat 4</th>
+                                                        <th>Sat 5</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="female-cadet-list"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-footer-bar">
+                                            <div class="pagination-controls female-pagination"></div>
+                                            <div class="subtotal-bar">Total Female Cadets: <strong class="female-count">0</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CAMPUS 4: ACA -->
+                    <div class="campus-card-accordion campus-aca" id="card-aca">
+                        <div class="campus-bar-header" onclick="toggleAccordion('aca')">
+                            <span class="campus-label">Asian College of Aeronautics</span>
+                            <span class="dropdown-icon">▼</span>
+                        </div>
+
+                        <div class="accordion-wrapper" id="aca-wrapper">
+                            <div class="campus-dropdown-body" id="aca" data-campus-name="Asian College of Aeronautics">
+                                <div class="action-controls-bar no-print">
+                                    <div class="search-wrapper">
+                                        <input type="text" class="campus-search-input" placeholder="Search cadet name in ACA..." onkeyup="filterCadets('aca', this.value)">
+                                    </div>
+                                    <div class="filter-controls-group">
+                                        <div class="control-field">
+                                            <label>Sort Order:</label>
+                                            <select class="campus-filter-select sort-select" onchange="updateCampusFilter('aca', 'sortOrder', this.value)">
+                                                <option value="asc">Alphabetical (A-Z)</option>
+                                                <option value="desc">Alphabetical (Z-A)</option>
+                                            </select>
+                                        </div>
+                                        <div class="control-field">
+                                            <label>Rows per page:</label>
+                                            <select class="campus-filter-select page-size-select" onchange="updateCampusFilter('aca', 'pageSize', this.value)">
+                                                <option value="10">10 Rows</option>
+                                                <option value="20">20 Rows</option>
+                                                <option value="30">30 Rows</option>
+                                                <option value="all">Show All</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="button-group">
+                                        <button class="btn btn-export" onclick="exportCampusToExcel('aca')">
+                                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                <line x1="8" y1="13" x2="16" y2="13"></line>
+                                                <line x1="8" y1="17" x2="16" y2="17"></line>
+                                                <polyline points="10 9 9 9 8 9"></polyline>
+                                            </svg>
+                                            Export Excel
+                                        </button>
+                                        <button class="btn btn-print" onclick="printCampusDirectory('card-aca')">
+                                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                                <rect x="6" y="14" width="12" height="8"></rect>
+                                            </svg>
+                                            Print Directory
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="campus-summary-card">
+                                    <h4 class="summary-title">Campus Cadets Summary</h4>
+                                    <div class="summary-grid">
+                                        <div class="summary-box active-box">
+                                            <span class="summary-label">Total Male</span>
+                                            <span class="summary-value active-male-count">0</span>
+                                        </div>
+                                        <div class="summary-box active-box">
+                                            <span class="summary-label">Total Female</span>
+                                            <span class="summary-value active-female-count">0</span>
+                                        </div>
+                                        <div class="summary-box active-box highlight-box">
+                                            <span class="summary-label">Total Cadets</span>
+                                            <span class="summary-value total-active-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box">
+                                            <span class="summary-label">Dropped Male</span>
+                                            <span class="summary-value dropped-male-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box">
+                                            <span class="summary-label">Dropped Female</span>
+                                            <span class="summary-value dropped-female-count">0</span>
+                                        </div>
+                                        <div class="summary-box drop-box highlight-box-red">
+                                            <span class="summary-label">Total Dropped</span>
+                                            <span class="summary-value total-dropped-count">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="gender-sections-wrapper">
+                                    <div class="gender-block" data-gender="male">
+                                        <h4 class="gender-title male-title">Male Cadets</h4>
+                                        <div class="table-wrapper">
+                                            <table class="attendance-table male-table">
+                                                <thead>
+                                                    <tr class="top-header">
+                                                        <th rowspan="2" class="student-col">LAST NAME, FIRST NAME, MIDDLE NAME</th>
+                                                        <th colspan="5">Saturday Training Schedule</th>
+                                                        <th rowspan="2">Absences</th>
+                                                        <th rowspan="2">Status</th>
+                                                    </tr>
+                                                    <tr class="sub-header">
+                                                        <th>Sat 1</th>
+                                                        <th>Sat 2</th>
+                                                        <th>Sat 3</th>
+                                                        <th>Sat 4</th>
+                                                        <th>Sat 5</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="male-cadet-list"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-footer-bar">
+                                            <div class="pagination-controls male-pagination"></div>
+                                            <div class="subtotal-bar">Total Male Cadets: <strong class="male-count">0</strong></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="gender-block" data-gender="female">
+                                        <h4 class="gender-title female-title">Female Cadets</h4>
+                                        <div class="table-wrapper">
+                                            <table class="attendance-table female-table">
+                                                <thead>
+                                                    <tr class="top-header">
+                                                        <th rowspan="2" class="student-col">LAST NAME, FIRST NAME, MIDDLE NAME</th>
+                                                        <th colspan="5">Saturday Training Schedule</th>
+                                                        <th rowspan="2">Absences</th>
+                                                        <th rowspan="2">Status</th>
+                                                    </tr>
+                                                    <tr class="sub-header">
+                                                        <th>Sat 1</th>
+                                                        <th>Sat 2</th>
+                                                        <th>Sat 3</th>
+                                                        <th>Sat 4</th>
+                                                        <th>Sat 5</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="female-cadet-list"></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-footer-bar">
+                                            <div class="pagination-controls female-pagination"></div>
+                                            <div class="subtotal-bar">Total Female Cadets: <strong class="female-count">0</strong></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ENLARGED CADET DETAIL & EDIT POPUP DRAWER -->
+    <div class="drawer-overlay" id="drawerOverlay" onclick="closeCadetDrawer()"></div>
+    <aside class="cadet-drawer" id="cadetDrawer">
+        <div class="drawer-header">
+            <div>
+                <h3>Cadet Personnel Profile</h3>
+                <p class="drawer-subtitle">Detailed Information & System Controls</p>
+            </div>
+            <button class="drawer-close-btn" onclick="closeCadetDrawer()">&times;</button>
+        </div>
+        
+        <div class="drawer-body">
+            <form id="cadetDetailsForm">
+                <input type="hidden" id="editCadetId">
+                
+                <!-- SECTION 1: PERSONAL INFORMATION -->
+                <div class="drawer-section">
+                    <h4 class="drawer-section-title">1. Personal Information</h4>
+                    <div class="drawer-grid">
+                        <div class="drawer-field-group">
+                            <label for="editLastName">Last Name</label>
+                            <input type="text" id="editLastName" class="drawer-input" disabled required>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editFirstName">First Name</label>
+                            <input type="text" id="editFirstName" class="drawer-input" disabled required>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editMiddleName">Middle Name</label>
+                            <input type="text" id="editMiddleName" class="drawer-input" disabled>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editExtensionName">Suffix</label>
+                            <input type="text" id="editExtensionName" class="drawer-input" disabled placeholder="e.g. Jr., III">
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editGender">Gender</label>
+                            <select id="editGender" class="drawer-input" disabled>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editBirthDate">Date of Birth</label>
+                            <input type="date" id="editBirthDate" class="drawer-input" disabled>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editContactNumber">Contact Number</label>
+                            <input type="tel" id="editContactNumber" class="drawer-input" disabled>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editEmail">Email Address</label>
+                            <input type="email" id="editEmail" class="drawer-input" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: ACADEMIC & ROTC PROFILE -->
+                <div class="drawer-section">
+                    <h4 class="drawer-section-title">2. Academic & ROTC Profile</h4>
+                    <div class="drawer-grid">
+                        <div class="drawer-field-group">
+                            <label for="editStudentNumber">Student ID Number</label>
+                            <input type="text" id="editStudentNumber" class="drawer-input" disabled>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editCampus">Institution / Campus</label>
+                            <select id="editCampus" class="drawer-input" disabled>
+                                <option value="WVSU - Main Campus">WVSU - Main Campus</option>
+                                <option value="St. Therese MTC - Colleges">St. Therese MTC - Colleges</option>
+                                <option value="Iloilo Doctors' College">Iloilo Doctors' College</option>
+                                <option value="Asian College of Aeronautics">Asian College of Aeronautics</option>
+                            </select>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editCourse">Degree Program / Course</label>
+                            <input type="text" id="editCourse" class="drawer-input" disabled>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editYearLevel">Year Level</label>
+                            <select id="editYearLevel" class="drawer-input" disabled>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editRotcComponent">ROTC Course / Class</label>
+                            <select id="editRotcComponent" class="drawer-input" disabled>
+                                <option value="MS 1">MS 1 (Basic ROTC - 1st Sem)</option>
+                                <option value="MS 2">MS 2 (Basic ROTC - 2nd Sem)</option>
+                                <option value="MS 31/32">Advance ROTC (Cadet Officer)</option>
+                            </select>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editPlatoon">Company / Unit Designation</label>
+                            <input type="text" id="editPlatoon" class="drawer-input" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: EMERGENCY CONTACT DETAILS -->
+                <div class="drawer-section">
+                    <h4 class="drawer-section-title">3. Emergency Contact Person</h4>
+                    <div class="drawer-grid">
+                        <div class="drawer-field-group">
+                            <label for="editGuardianName">Guardian / Parent Full Name</label>
+                            <input type="text" id="editGuardianName" class="drawer-input" disabled>
+                        </div>
+
+                        <div class="drawer-field-group">
+                            <label for="editGuardianRelationship">Relationship</label>
+                            <input type="text" id="editGuardianRelationship" class="drawer-input" disabled>
+                        </div>
+
+                        <div class="drawer-field-group full-width">
+                            <label for="editGuardianContact">Guardian Contact Number</label>
+                            <input type="tel" id="editGuardianContact" class="drawer-input" disabled>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="drawer-footer">
+            <div id="viewActions">
+                <button type="button" class="btn btn-primary-action" id="enableEditBtn" onclick="enableCadetEdit()">Edit Information</button>
+                <button type="button" class="btn btn-danger-action" id="deleteCadetBtn" onclick="deleteCadet()">Delete Cadet</button>
+            </div>
+            <div id="editActions" style="display: none;">
+                <button type="button" class="btn btn-save-action" onclick="saveCadetChanges()">Save Changes</button>
+                <button type="button" class="btn btn-cancel-action" onclick="cancelCadetEdit()">Cancel</button>
+            </div>
+        </div>
+    </aside>
+</body>
+</html>

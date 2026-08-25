@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/dashboard.css">
+    <!-- Chart.js for Attendance Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Cadet Dashboard - PAF ROTC</title>
+</head>
+
+<body>
+    <div class="dashboard-wrapper">
+       <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-logo">
+                    <img src="../IMAGES/ROTC logo.png" alt="ROTC Logo">
+                </div>
+                <div class="brand-info">
+                    <span class="brand-title">WVSU - Air Force ROTC Unit</span>
+                </div>
+                <button id="sidebarToggle" class="toggle-btn" aria-label="Toggle Sidebar">
+                    <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sidebar-nav">
+                <div class="nav-group">
+                    <span class="nav-label">Analytics</span>
+                    <a href="dashboard.html" class="nav-item active">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="9" />
+                            <rect x="14" y="3" width="7" height="5" />
+                            <rect x="14" y="12" width="7" height="9" />
+                            <rect x="3" y="16" width="7" height="5" />
+                        </svg>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                    <a href="campus-management.html" class="nav-item">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 4z" />
+                            <path d="M6.5 20h11a2.5 2.5 0 0 0-2.5-2.5h-6A2.5 2.5 0 0 0 6.5 20z" />
+                        </svg>
+                        <span class="nav-text">Campus Management</span>
+                    </a>
+                </div>
+
+                <!-- NEW ADMINISTRATION GROUP -->
+                <div class="nav-group">
+                    <span class="nav-label">Administration</span>
+                    <a href="cadet-registration.html" class="nav-item">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="8.5" cy="7" r="4"></circle>
+                            <line x1="20" y1="8" x2="20" y2="14"></line>
+                            <line x1="17" y1="11" x2="23" y2="11"></line>
+                        </svg>
+                        <span class="nav-text">Cadet Registration</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="nav-item logout-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    <span class="nav-text">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN DASHBOARD CONTENT -->
+        <main class="main-content">
+            <!-- USER HEADER -->
+            <header class="dashboard-header">
+                <div class="user-welcome">
+                    <h2>Welcome back, <span id="userRank">Cadet</span> <span id="userName">Loading...</span></h2>
+                    <p>Class: <strong id="userClass">---</strong> | Email: <span id="userEmail">---</span></p>
+                </div>
+            </header>
+
+            <!-- CAMPUS KPI CARDS -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span class="kpi-title">WVSU - Main Campus</span>
+                        <h3 class="kpi-value" id="kpiWvsu">0</h3>
+                        <span class="kpi-sub">Registered Cadets</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span class="kpi-title">St. Therese MTC - Colleges</span>
+                        <h3 class="kpi-value" id="kpiStTherese">0</h3>
+                        <span class="kpi-sub">Registered Cadets</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Iloilo Doctors' College</span>
+                        <h3 class="kpi-value" id="kpiIdc">0</h3>
+                        <span class="kpi-sub">Registered Cadets</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Asian College of Aeronautics</span>
+                        <h3 class="kpi-value" id="kpiAca">0</h3>
+                        <span class="kpi-sub">Registered Cadets</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- GRAPH & CALENDAR ROW -->
+            <section class="dashboard-grid">
+                <!-- SATURDAY ATTENDANCE GRAPH -->
+                <div class="dashboard-card graph-card">
+                    <div class="card-header">
+                        <h3>Saturday Training Attendance</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="attendanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- CALENDAR & ANNOUNCEMENTS SECTION -->
+                <div class="dashboard-card calendar-card">
+                    <div class="calendar-header">
+                        <button id="prevMonthBtn" class="cal-nav-btn">&lt;</button>
+                        <h3 id="calendarMonthYear">Month Year</h3>
+                        <button id="nextMonthBtn" class="cal-nav-btn">&gt;</button>
+                    </div>
+                    
+                    <div class="calendar-weekdays">
+                        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                    </div>
+                    <div class="calendar-days" id="calendarDays"></div>
+
+                    <!-- ANNOUNCEMENT SECTION -->
+                    <div class="announcement-section">
+                        <div class="announcement-header">
+                            <h4>Directives (<span id="selectedDateText">Today</span>)</h4>
+                            <button id="openAnnounceModalBtn" class="btn btn-gold-sm">+ Add Directive</button>
+                        </div>
+                        <div class="announcements-list" id="announcementsList">
+                            <p class="no-data">No announcements for this date.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ANNOUNCEMENT MODAL -->
+    <div class="modal-overlay" id="announceModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Create Announcement</h3>
+                <button class="close-modal" id="closeAnnounceModalBtn">&times;</button>
+            </div>
+            <form id="announcementForm">
+                <div class="form-group">
+                    <label>Announcement Type</label>
+                    <select id="announcementType" class="form-select" required>
+                        <option value="normal">Normal Announcement</option>
+                        <option value="military">Military Directive</option>
+                    </select>
+                </div>
+
+                <div id="normalFields" class="form-group">
+                    <label>Message Content</label>
+                    <textarea id="normalText" class="form-textarea" placeholder="Enter announcement text..."></textarea>
+                </div>
+
+                <div id="militaryFields" class="military-fields-group" style="display: none;">
+                    <div class="form-group">
+                        <label>WHO (Target Campuses):</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="whoCampus" value="WVSU Main"> WVSU - Main Campus</label>
+                            <label><input type="checkbox" name="whoCampus" value="St. Therese MTC"> St. Therese MTC</label>
+                            <label><input type="checkbox" name="whoCampus" value="Iloilo Doctors' College"> Iloilo Doctors' College</label>
+                            <label><input type="checkbox" name="whoCampus" value="Asian College of Aeronautics"> Asian College of Aeronautics</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>WHAT:</label>
+                        <input type="text" id="milWhat" class="form-input" placeholder="e.g. Mandatory Field Training Drill">
+                    </div>
+                    <div class="form-group">
+                        <label>WHEN:</label>
+                        <input type="text" id="milWhen" class="form-input" placeholder="e.g. 0600H Saturday">
+                    </div>
+                    <div class="form-group">
+                        <label>WHERE:</label>
+                        <input type="text" id="milWhere" class="form-input" placeholder="e.g. WVSU Parade Ground">
+                    </div>
+                    <div class="form-group">
+                        <label>U.O.D (Uniform of the Day):</label>
+                        <input type="text" id="milUod" class="form-input" placeholder="e.g. BDU Uniform / Combat Boots">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelAnnounceBtn">Cancel</button>
+                    <button type="submit" class="btn btn-gold">Publish Directive</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="../JS/dashboard.js"></script>
+</body>
+</html>

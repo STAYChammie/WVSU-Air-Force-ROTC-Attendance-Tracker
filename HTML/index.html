@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/index.css">
+    <title>PAF ROTC - Portal Access</title>
+</head>
+<body>
+    <div class="container">
+        <!-- MAIN AREA -->
+        <main class="create-account">
+            <header class="header-zone">
+                <!-- <h1>Cadet Account Registration</h1>
+                <p>Register new Personnel or Cadet Officers to the Attendance System</p> -->
+            </header>
+
+            <!-- SLIDING AUTH CONTAINER -->
+            <div class="auth-container" id="authContainer">
+                
+                <!-- SIGN UP FORM -->
+                <div class="form-container sign-up-container">
+                    <form id="signUpForm">
+                        <h2>Create Account</h2>
+                        <span>Enter cadet details for registration</span>
+
+                        <div class="form-scroll-wrapper">
+                            <!-- SECTION 1: ACCOUNT ROLE & PERSONAL INFORMATION -->
+                            <div class="form-section-title">Account Type & Rank</div>
+                            
+                            <div class="input-grid grid-2">
+                                <div class="input-with-label">
+                                    <label>Account Role</label>
+                                    <select class="form-select" id="roleSelect" required>
+                                        <option value="cadet" selected>Cadet (Regular)</option>
+                                        <option value="officer">Cadet Officer (Admin)</option>
+                                    </select>
+                                </div>
+
+                                <div class="input-with-label">
+                                    <label>Military Rank</label>
+                                    <select class="form-select" id="rankSelect" required>
+                                        <option value="" disabled selected hidden>Select Rank</option>
+                                        <option value="C/COL">C/COL</option>
+                                        <option value="C/LTC">C/LTC</option>
+                                        <option value="C/MAJ">C/MAJ</option>
+                                        <option value="C/CPT">C/CPT</option>
+                                        <option value="C/1LT">C/1LT</option>
+                                        <option value="C/2LT">C/2LT</option>
+                                        <option value="Aspirant">Aspirant / Basic Cadet</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- OFFICER AUTHORIZATION PASSCODE (HIDDEN BY DEFAULT) -->
+                            <div class="input-with-label" id="officerPasscodeContainer" style="display: none; margin-top: 6px;">
+                                <label style="color: #DC2626; font-weight: 700;">Unit Authorization Passcode *</label>
+                                <input type="password" id="officerPasscode" placeholder="Enter Unit Passcode" />
+                            </div>
+
+                            <div class="form-section-title">Personal Information</div>
+
+                            <div class="input-grid grid-2">
+                                <div class="input-with-label">
+                                    <label>Class</label>
+                                    <input type="text" id="classInput" placeholder="Cadet Class" readonly />
+                                </div>
+                                <div class="input-with-label">
+                                    <!-- Empty column for symmetry -->
+                                </div>
+                            </div>
+
+                            <div class="input-grid grid-2">
+                                <input type="text" id="lastName" placeholder="Last Name" required />
+                                <input type="text" id="firstName" placeholder="First Name" required />
+                            </div>
+
+                            <div class="input-grid grid-2">
+                                <input type="text" id="middleName" placeholder="Middle Name" />
+                                <input type="text" id="suffix" placeholder="Suffix (e.g. Jr., III)" />
+                            </div>
+
+                            <div class="input-grid grid-2">
+                                <div class="input-with-label">
+                                    <label>Birthday</label>
+                                    <input type="date" id="dobInput" required />
+                                </div>
+                                <div class="input-with-label">
+                                    <label>Age</label>
+                                    <input type="number" id="ageInput" placeholder="Age" readonly />
+                                </div>
+                            </div>
+
+                            <!-- SECTION 2: ACCOUNT CREDENTIALS -->
+                            <div class="form-section-title">Account Details</div>
+                            
+                            <input type="email" id="signUpEmail" placeholder="Institutional Email" required />
+                            
+                            <!-- PASSWORD WITH EYE TOGGLE AND STRENGTH METER -->
+                            <div class="password-wrapper">
+                                <input type="password" id="signUpPassword" placeholder="Password" required />
+                                <span class="toggle-password" id="toggleSignUpPass">👁️</span>
+                            </div>
+
+                            <!-- STRENGTH METER BAR -->
+                            <div class="strength-meter-container">
+                                <div class="strength-bar" id="strengthBar"></div>
+                            </div>
+                            <span class="strength-text" id="strengthText"></span>
+
+                            <div class="password-wrapper">
+                                <input type="password" id="signUpConfirmPassword" placeholder="Confirm Password" required />
+                                <span class="toggle-password" id="toggleSignUpConfirmPass">👁️</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-gold">SIGN UP</button>
+                    </form>
+                </div>
+
+                <!-- SIGN IN FORM -->
+                <div class="form-container sign-in-container">
+                    <form id="signInForm">
+                        <h2>Sign In</h2>
+                        <span>Access your Cadet Attendance Dashboard</span>
+                        <input type="email" id="signInEmail" placeholder="Institutional Email" required />
+                        
+                        <div class="password-wrapper">
+                            <input type="password" id="signInPassword" placeholder="Password" required />
+                            <span class="toggle-password" id="toggleSignInPass">👁️</span>
+                        </div>
+
+                        <a href="#" class="forgot-pass">Forgot your password?</a>
+                        <button type="submit" class="btn btn-gold">SIGN IN</button>
+                    </form>
+                </div>
+
+                <!-- OVERLAY PANELS (SLIDING COVER) -->
+                <div class="overlay-container">
+                    <div class="overlay">
+                        <div class="overlay-panel overlay-left">
+                            <h2>Welcome Back, Cadet!</h2>
+                            <p>To keep connected with your unit, please sign in with your account details</p>
+                            <button class="btn btn-ghost" id="signInBtn">SIGN IN</button>
+                        </div>
+                        
+                        <div class="overlay-panel overlay-right">
+                            <h2>Flight Greetings!</h2>
+                            <p>Enter your personal details and start your journey with the Air Force ROTC</p>
+                            <button class="btn btn-ghost" id="signUpBtn">CREATE ACCOUNT</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- EXTERNAL JS MODULE -->
+    <script type="module" src="../JS/index.js"></script>
+</body>
+</html>
